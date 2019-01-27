@@ -8,7 +8,7 @@ import Signup from './pages/Signup';
 import ChatRoom from './pages/ChatRoom';
 import User from './pages/User';
 import NotFound from './pages/NotFound';
-import { Route, Link, NavLink, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom';
+import { Route, NavLink, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom';
 
 const config = {
   apiKey: "AIzaSyAglyqBZw-q0q9msDClwH7p8yAtO1yK3nw",
