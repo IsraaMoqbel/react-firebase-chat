@@ -9,87 +9,75 @@ import ChatRoom from './pages/ChatRoom';
 import User from './pages/User';
 import NotFound from './pages/NotFound';
 import { Route, NavLink, Switch, Redirect, BrowserRouter as Router } from 'react-router-dom';
+import SignOutButton from './components/SignOutButton';
+import { withAuthentication, AuthUserContext } from './components/Session';
 
-const config = {
-  apiKey: "AIzaSyAglyqBZw-q0q9msDClwH7p8yAtO1yK3nw",
-  authDomain: "react-hooks-c5630.firebaseapp.com",
-  databaseURL: "https://react-hooks-c5630.firebaseio.com",
-  projectId: "react-hooks-c5630",
-  storageBucket: "react-hooks-c5630.appspot.com",
-  messagingSenderId: process.env.SENDER_ID
-};
-firebase.initializeApp(config);
+const NewRoute = ({ component: Component, ...rest }) => (
+  <AuthUserContext.Consumer>
+  {( authUser ) => (
+    <Route
+    render={
+      props =>
+      <Component {...props} authUser={authUser}/>
+    }
+    {...rest}
+
+    />
+  )}
+  </AuthUserContext.Consumer>
+)
+const ProtectedRoute = ({ component: ChatRoom, ...rest }) => (
+  <AuthUserContext.Consumer>
+    {( authUser ) => (
+      <Route
+        render={
+          props =>
+            authUser
+            ? <ChatRoom {...props} authUser={authUser}/>
+            : <Redirect to="/login" />
+        }
+        {...rest}
+      />
+    )}
+  </AuthUserContext.Consumer>
+)
 
 class App extends Component {
 
-  constructor(){
-    super();
-    this.state = {
-      loggedin:false,
-      username:""
-    };
-
-  }
-  componentDidMount(){
-     this.listener = firebase.auth().onAuthStateChanged((user)=> {
-      user
-       ? this.setState({ loggedin:true, username: user.displayName })
-       : this.setState({ loggedin: false });
-    });
-  }
-  componentWillUnmount() {
-    this.listener();
-  }
-
-  logOut=()=>{
-    firebase.auth().signOut().then(()=> {
-      // Sign-out successful.
-      // this.props.history.push('/login')
-      console.log('Sign-out successful.')
-      }).catch(function(error) {
-      // An error happened.
-    });
-  }
-
-  render() {
-    const PrivateRoute = ({ component: Component, ...rest }) => (
-      <Route {...rest} render={(props) => (
-        this.state.loggedin
-          ? <ChatRoom username={this.state.username}/>
-          : <Redirect  to="/login" />
-      )} />
-)
-    return (
-      <Router>
-        <div className="App">
-        <ul>
+render(){
+console.log(this.props);
+  return (
+    <Router>
+    <div className="App">
+    <ul>
+    <li>
+    <NavLink exact to="/" activeClassName="active">Home</NavLink>
+    </li>
+      <div>
       <li>
-        <NavLink exact to="/" activeClassName="active">Home</NavLink>
-      </li>
-      {!this.state.loggedin ?
-        <div>
-      <li>
-        <NavLink to="/login" activeClassName="active">Log in</NavLink>
+      <NavLink to="/login" activeClassName="active">Log in</NavLink>
       </li>
       <li>
       <NavLink to="/signup" activeClassName="active">Sign Up</NavLink>
       </li>
-      </div>:
+      </div>
       <li>
-        <NavLink onClick={()=> this.logOut()} to="/" >Sign Out</NavLink>
-      </li>}
+      <SignOutButton />
+      </li>
+
     </ul>
     <Switch>
-    <Route path="/login" component={Login} />
-    <PrivateRoute path='/' exact component={ChatRoom} />
-      <Route path="/signup" component={Signup} />
-      <Route path="/users/:id" component={User} />
-      <Route component={NotFound} />
+    <NewRoute path="/signup" component={Signup} />
+    <ProtectedRoute path="/" exact component={ChatRoom}  />
+    <NewRoute path="/login"  component={Login} />
+    <Route path="/users/:id" component={User} />
+    <Route component={NotFound} />
 
     </Switch>
-        </div>
-      </Router>
-    );
-  }
+    </div>
+    </Router>
+  );
 }
-export default (App);
+  }
+
+export default withAuthentication(App);

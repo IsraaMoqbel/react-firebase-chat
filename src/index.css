@@ -86,7 +86,6 @@ button:disabled {
   margin-left: -60px;
 }
 
-/* Show the tooltip text when you mouse over the tooltip container */
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
@@ -94,10 +93,23 @@ button:disabled {
 .tooltip .tooltiptext::after {
   content: " ";
   position: absolute;
-  top: 100%; /* At the bottom of the tooltip */
+  top: 100%; 
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
   border-color:  #900C3F transparent transparent transparent;
+}
+
+.signin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.sign-out {
+  font-size: 16px;
+  cursor: pointer;
+  width: auto;
 }

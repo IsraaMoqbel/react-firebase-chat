@@ -23,7 +23,8 @@ class ChatRoom extends Component {
     };
   }
   componentDidMount() {
-    this.chatRoom.on('value', this.handleNewMessages);
+    // (this.props.authUser) ? this.chatRoom.on('value', this.handleNewMessages): this.props.history.push('/login')
+    this.chatRoom.on('value', this.handleNewMessages)
   }
   componentWillUnmount() {
     this.chatRoom.off('value', this.handleNewMessages);
@@ -41,16 +42,9 @@ class ChatRoom extends Component {
       this.setState({ msg: "" });
     }
   };
-  logOut=()=>{
-    firebase.auth().signOut().then(()=> {
-      // Sign-out successful.
-      this.props.history.push('/login')
-      console.log('Sign-out successful.')
-      }).catch(function(error) {
-      // An error happened.
-    });
-  }
+
   render() {
+    console.log(this.props)
     return (
       <div className="App">
           <div className="chat">
@@ -71,4 +65,4 @@ class ChatRoom extends Component {
     );
   }
 }
-export default ChatRoom;
+export default (ChatRoom);
